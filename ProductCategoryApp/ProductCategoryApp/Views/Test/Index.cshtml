@@ -1,0 +1,102 @@
+﻿@model IEnumerable<ProductCategoryApp.Test>
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Index</title>
+</head>
+<body>
+    <table id="tblProducts" class="table" cellpadding="3" cellspacing="3">
+        <tr>
+            <th style="width:100px">Id</th>
+            <th style="width:100px">Name</th>
+            <th></th>
+        </tr>
+        @foreach (Test test in Model)
+        {
+            <tr>
+                <td class="Id">
+                    <span>@test.Id</span>
+                </td>
+                <td class="Name">
+                    <span>@test.Name</span>
+                    <input type="text" value="@test.Name" style="display:none" />
+                </td>
+                
+                @*<td class="Category">
+                    <span>@product.Category</span>
+                    <input type="text" value="@product.Category" style="display:none" />
+
+                </td>*@
+                <td>
+                    <a class="Edit" href="javascript:;">Edit</a>
+                    <a class="Update" href="javascript:;" style="display:none">Update</a>
+                    <a class="Cancel" href="javascript:;" style="display:none">Cancel</a>
+                    <a class="Delete" href="javascript:;">Delete</a>
+                </td>
+            </tr>
+        }
+    </table>
+    <table border="0" cellpadding="0" cellspacing="0">
+        <tr>
+            <td style="width: 150px">
+                Id<br />
+                <input type="text" id="txtId" style="width:110px" />
+            </td>
+            <td style="width: 150px">
+                Name<br />
+                <input type="text" id="txtName" style="width:110px" />
+            </td>
+
+            <td style="width: 200px">
+                <br />
+                <input type="button" id="btnAdd" value="Add" />
+            </td>
+        </tr>
+    </table>
+
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+    <script type="text/javascript" src="http://ajax.cdnjs.com/ajax/libs/json2/20110223/json2.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            if ($("#tblProducts tr").length > 2) {
+                $("#tblProducts tr:eq(1)").remove();
+            }
+        });
+        function AppendRow(row, Id, Name) {
+
+            $(".Id", row).find("span").html(Id);
+            $(".Name", row).find("span").html(Name);
+            $(".Name", row).find("input").val(Name);
+            $("#tblProducts").append(row);
+        };
+        $(document).ready(function () {
+            $("#btnAdd").click(function () {
+                debugger;
+                var txtId = $("#txtId");
+                var txtName = $("#txtName");
+                $.ajax({
+                    type: "POST",
+                    url: "/Test/Create",
+                    data: '{ Id: "' + txtId.val() + '",Name: "' + txtName.val() + '"}',
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (r) {
+                        var row = $("#tblProducts tr:last-child").clone(true);
+                        AppendRow(row, r.Id, r.Name);
+                        txtId.val("");
+                        txtName.val("");
+                    }
+                });
+            });
+        });
+        
+    </script>
+</body>
+</html>
+

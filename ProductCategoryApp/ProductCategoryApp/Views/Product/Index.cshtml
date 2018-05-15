@@ -1,0 +1,302 @@
+﻿@model IEnumerable<ProductCategoryApp.Product>
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Index</title>
+</head>
+<body>
+    <table id="tblProducts" class="table" cellpadding="3" cellspacing="3">
+        <tr>
+            <th style="width:100px">ProductId</th>
+            <th style="width:100px">ProductName</th>
+            <th style="width:100px">ProductCode</th>
+            <th style="width:100px">Quantity</th>
+            <th style="width:100px">Amount</th>
+            <th style="width:100px">TaxPercent</th>
+            <th style="width:100px">TaxAmount</th>
+            <th style="width:100px">NetAmount</th>
+            <th style="width:100px">Category</th>
+            <th></th>
+        </tr>
+        @foreach (Product product in Model)
+            {
+            <tr>
+                <td class="ProductId">
+                    <span>@product.ProductId</span>
+                </td>
+                <td class="ProductName">
+                    <span>@product.ProductName</span>
+                    <input type="text" value="@product.ProductName" style="display:none" />
+                </td>
+                <td class="ProductCode">
+                    <span>@product.ProductCode</span>
+                    <input type="text" value="@product.ProductCode" style="display:none" />
+                </td>
+                <td class="Quantity">
+                    <span>@product.Quantity</span>
+                    <input type="text" value="@product.Quantity" style="display:none" />
+                </td>
+                <td class="Amount">
+                    <span>@product.Amount</span>
+                    <input type="text" value="@product.Amount" style="display:none" />
+                </td>
+                <td class="TaxPercent">
+                    <span>@product.TaxPercent</span>
+                    <input type="text" value="@product.TaxPercent" style="display:none" />
+                </td>
+                <td class="TaxAmount">
+                    <span>@product.TaxAmount</span>
+                    <input type="text" value="@product.TaxAmount" style="display:none" />
+                </td>
+                <td class="NetAmount">
+                    <span>@product.NetAmount</span>
+                    <input type="text" value="@product.NetAmount" style="display:none" />
+                </td>
+                <td class="Category">
+                    <span>@product.Category</span>
+                    <input type="text" value="@product.Category" style="display:none" />
+                </td>
+                <td>
+                    <a class="Edit" href="javascript:;">Edit</a>
+                    <a class="Update" href="javascript:;" style="display:none">Update</a>
+                    <a class="Cancel" href="javascript:;" style="display:none">Cancel</a>
+                    <a class="Delete" href="javascript:;">Delete</a>
+                </td>
+            </tr>
+        }
+    </table>
+    <table border="0" cellpadding="0" cellspacing="0">
+        <tr>
+            <td style="width: 150px">
+                ProductName<br />
+                <input type="text" id="txtProductName" style="width:110px" />
+            </td>
+            <td style="width: 150px">
+                ProductCode:<br />
+                <input type="text" id="txtProductCode" style="width:110px" />
+            </td>
+            <td style="width: 150px">
+                Quantity:<br />
+                <input type="text" id="txtQuantity" style="width:110px" />
+            </td>
+            <td style="width: 150px">
+                Amount:<br />
+                <input type="text" id="txtAmount" style="width:110px" />
+            </td>
+            <td style="width: 150px">
+                TaxPercent:<br />
+                <input type="text" id="txtTaxPercent" style="width:110px" />
+            </td>
+            <td style="width: 150px">
+                TaxAmount:<br />
+                <input type="text" id="txtTaxAmount" style="width:110px" />
+            </td>
+            <td style="width: 150px">
+                NetAmount:<br />
+                <input type="text" id="txtNetAmount" style="width:110px" />
+            </td>
+            <td style="width: 150px">
+                Category:<br />
+                <select class="form-control" id="txtCategory">
+                    <option selected="selected">Select</option>
+                </select>
+            </td>
+
+            <td style="width: 200px">
+                <br />
+                <input type="button" id="btnAdd" value="Add" />
+            </td>
+        </tr>
+    </table>
+
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+    <script type="text/javascript" src="http://ajax.cdnjs.com/ajax/libs/json2/20110223/json2.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            //Remove the dummy row if data present.
+            if ($("#tblProducts tr").length > 2) {
+                $("#tblProducts tr:eq(1)").remove();
+            }
+        });
+        function AppendRow(row, ProductId, ProductName, ProductCode, Quantity, Amount, TaxPercent, TaxAmount, NetAmount, Category) {
+
+            $(".ProductId", row).find("span").html(ProductId);
+
+            $(".ProductName", row).find("span").html(ProductName);
+            $(".ProductName", row).find("input").val(ProductName);
+
+            $(".ProductCode", row).find("span").html(ProductCode);
+            $(".ProductCode", row).find("input").val(ProductCode);
+
+            $(".Quantity", row).find("span").html(Quantity);
+            $(".Quantity", row).find("input").val(Quantity);
+
+            $(".Amount", row).find("span").html(Amount);
+            $(".Amount", row).find("input").val(Amount);
+
+            $(".TaxPercent", row).find("span").html(TaxPercent);
+            $(".TaxPercent", row).find("input").val(TaxPercent);
+
+            $(".TaxAmount", row).find("span").html(TaxAmount);
+            $(".TaxAmount", row).find("input").val(TaxAmount);
+
+            $(".NetAmount", row).find("span").html(NetAmount);
+            $(".NetAmount", row).find("input").val(NetAmount);
+
+            $(".Category", row).find("span").html(Category);
+            $(".Category", row).find("input").val(Category);
+            $("#tblProducts").append(row);
+        };
+
+        $(document).ready(function () {
+            $("#btnAdd").click(function () {
+                
+                var txtProductName = $("#txtProductName");
+                var txtProductCode = $("#txtProductCode");
+                var txtQuantity = $("#txtQuantity");
+                var txtAmount = $("#txtAmount");
+                var txtTaxPercent = $("#txtTaxPercent");
+                var txtTaxAmount = $("#txtTaxAmount");
+                var txtNetAmount = $("#txtNetAmount");
+                var txtCategory = $("#txtCategory");
+                $.ajax({
+                    type: "POST",
+                    url: "/Product/Create",
+                    data: '{ProductName: "' + txtProductName.val() + '", ProductCode: "' + txtProductCode.val() + '",Quantity:"' + txtQuantity.val() + '",Amount:"' + txtAmount.val() + '",TaxPercent:"' + txtTaxPercent.val() + '",TaxAmount:"' + txtTaxAmount.val() + '", NetAmount:"' + txtNetAmount.val() + '",Category:"' + txtCategory.val() + '"}',
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (r) {
+                        var row = $("#tblProducts tr:last-child").clone(true);
+                        AppendRow(row, r.ProductId, r.ProductName, r.ProductCode, r.Quantity, r.Amount, r.TaxPercent, r.TaxAmount, r.NetAmount, r.Category);
+                        txtProductName.val("");
+                        txtProductCode.val("");
+                        txtQuantity.val("");
+                        txtAmount.val("");
+                        txtTaxPercent.val("");
+                        txtTaxAmount.val("");
+                        txtNetAmount.val("");
+                        txtCategory.val("");
+                    }
+                });
+            });
+        });
+        //Edit event handler.
+        $(document).ready(function () {
+            $("body").on("click", "#tblProducts .Edit", function () {
+                var row = $(this).closest("tr");
+                $("td", row).each(function () {
+                    if ($(this).find("input").length > 0) {
+                        $(this).find("input").show();
+                        $(this).find("span").hide();
+                    }
+                });
+                row.find(".Update").show();
+                row.find(".Cancel").show();
+                row.find(".Delete").hide();
+                $(this).hide();
+            });
+        });
+
+        //Update event handler.
+        $(document).ready(function () {
+            $("body").on("click", "#tblProducts .Update", function () {
+                var row = $(this).closest("tr");
+                $("td", row).each(function () {
+                    if ($(this).find("input").length > 0) {
+                        var span = $(this).find("span");
+                        var input = $(this).find("input");
+                        span.html(input.val());
+                        span.show();
+                        input.hide();
+                    }
+                });
+                row.find(".Edit").show();
+                row.find(".Delete").show();
+                row.find(".Cancel").hide();
+                $(this).hide();
+
+                var product = {};
+                product.ProductId = row.find(".ProductId").find("span").html();
+                product.ProductName = row.find(".ProductName").find("span").html();
+                product.ProductCode = row.find(".ProductCode").find("span").html();
+                product.Quantity = row.find(".Quantity").find("span").html();
+                product.Amount = row.find(".Amount").find("span").html();
+                product.TaxPercent = row.find(".TaxPercent").find("span").html();
+                product.TaxAmount = row.find(".TaxAmount").find("span").html();
+                product.NetAmount = row.find(".NetAmount").find("span").html();
+                product.Category = row.find(".Category").find("span").html();
+                $.ajax({
+                    type: "POST",
+                    url: "/Product/UpdateProduct",
+                    data: '{product:' + JSON.stringify(product) + '}',
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json"
+                });
+            });
+        });
+
+        //Cancel event handler.
+        $(document).ready(function () {
+            $("body").on("click", "#tblProducts .Cancel", function () {
+                var row = $(this).closest("tr");
+                $("td", row).each(function () {
+                    if ($(this).find("input").length > 0) {
+                        var span = $(this).find("span");
+                        var input = $(this).find("input");
+                        input.val(span.html());
+                        span.show();
+                        input.hide();
+                    }
+                });
+                row.find(".Edit").show();
+                row.find(".Delete").show();
+                row.find(".Update").hide();
+                $(this).hide();
+            });
+        });
+
+        //Delete event handler.
+        $(document).ready(function () {
+            $("body").on("click", "#tblProducts .Delete", function () {
+                if (confirm("Do you want to delete this row?")) {
+                    var row = $(this).closest("tr");
+                    var ProductId = row.find("span").html();
+                    $.ajax({
+                        type: "POST",
+                        url: "/Product/DeleteProduct",
+                        data: '{ProductId: ' + ProductId + '}',
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+                        success: function (response) {
+                            row.remove();
+                        }
+                    });
+                }
+            });
+        });
+
+        $(document).ready(function () {
+            debugger;
+            $.ajax({
+                url: "/Product/GetCategory",
+                datatype: "JSON",
+                type: "Get",
+                success: function (data) {
+                    debugger;
+                    for (var i = 0; i < data.length; i++) {
+                        var opt = new Option(data[i].CategoryName);
+                        $("#txtCategory").append(opt);
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
+

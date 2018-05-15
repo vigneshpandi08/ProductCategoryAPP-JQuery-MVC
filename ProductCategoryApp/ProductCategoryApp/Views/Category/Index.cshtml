@@ -1,0 +1,172 @@
+﻿@model IEnumerable<ProductCategoryApp.ProductCategory>
+@{
+    Layout = null;
+}
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Index</title>
+</head>
+<body>
+    <table id="tblCategories" class="table" cellpadding="3" cellspacing="3">
+        <tr>
+            <th style="width:100px">CategoryId</th>
+            <th style="width:100px">CategoryName</th>
+            <th></th>
+        </tr>
+        @foreach (ProductCategory category in Model)
+            {
+            <tr>
+                <td class="CategoryId">
+                    <span>@category.CategoryId</span>
+                </td>
+                <td class="CategoryName">
+                    <span>@category.CategoryName</span>
+                    <input type="text" value="@category.CategoryName" style="display:none" />
+                </td>
+               
+                <td>
+                    <a class="Edit" href="javascript:;">Edit</a>
+                    <a class="Update" href="javascript:;" style="display:none">Update</a>
+                    <a class="Cancel" href="javascript:;" style="display:none">Cancel</a>
+                    <a class="Delete" href="javascript:;">Delete</a>
+                </td>
+            </tr>
+        }
+    </table>
+    <table border="0" cellpadding="0" cellspacing="0">
+        <tr>
+            <td style="width: 150px">
+                CategoryName<br />
+                <input type="text" id="txtCategoryName" style="width:110px" />
+            </td>
+            
+            <td style="width: 200px">
+                <br />
+                <input type="button" id="btnAdd" value="Add" />
+            </td>
+        </tr>
+    </table>
+
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+    <script type="text/javascript" src="http://ajax.cdnjs.com/ajax/libs/json2/20110223/json2.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            //Remove the dummy row if data present.
+            if ($("#tblCategories tr").length > 2) {
+                $("#tblCategories tr:eq(1)").remove();
+            }
+        });
+        function AppendRow(row, CategoryId, CategoryName) {
+
+            $(".CategoryId", row).find("span").html(CategoryId);
+
+            $(".CategoryName", row).find("span").html(CategoryName);
+            $(".CategoryName", row).find("input").val(CategoryName);
+
+           
+            $("#tblCategories").append(row);
+        };
+
+        //Add event handler.
+        $("body").on("click", "#btnAdd", function () {
+            debugger;
+            var txtCategoryName = $("#txtCategoryName");
+            $.ajax({
+                type: "POST",
+                url: "/Category/Create",
+                data: '{CategoryName: "' + txtCategoryName.val() + '"}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (r) {
+                    var row = $("#tblCategories tr:last-child").clone(true);
+                    AppendRow(row, r.CategoryId, r.CategoryName);
+                    txtCategoryName.val("");
+                }
+            });
+        });
+        //Edit event handler.
+        $("body").on("click", "#tblCategories .Edit", function () {
+            var row = $(this).closest("tr");
+            $("td", row).each(function () {
+                if ($(this).find("input").length > 0) {
+                    $(this).find("input").show();
+                    $(this).find("span").hide();
+                }
+            });
+            row.find(".Update").show();
+            row.find(".Cancel").show();
+            row.find(".Delete").hide();
+            $(this).hide();
+        });
+
+        //Update event handler.
+        $("body").on("click", "#tblCategories .Update", function () {
+            var row = $(this).closest("tr");
+            $("td", row).each(function () {
+                if ($(this).find("input").length > 0) {
+                    var span = $(this).find("span");
+                    var input = $(this).find("input");
+                    span.html(input.val());
+                    span.show();
+                    input.hide();
+                }
+            });
+            row.find(".Edit").show();
+            row.find(".Delete").show();
+            row.find(".Cancel").hide();
+            $(this).hide();
+
+            var category = {};
+            category.CategoryId = row.find(".CategoryId").find("span").html();
+            category.CategoryName = row.find(".CategoryName").find("span").html();
+            $.ajax({
+                type: "POST",
+                url: "/Category/UpdateCategory",
+                data: '{category:' + JSON.stringify(category) + '}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json"
+            });
+        });
+
+        //Cancel event handler.
+        $("body").on("click", "#tblCategories .Cancel", function () {
+            var row = $(this).closest("tr");
+            $("td", row).each(function () {
+                if ($(this).find("input").length > 0) {
+                    var span = $(this).find("span");
+                    var input = $(this).find("input");
+                    input.val(span.html());
+                    span.show();
+                    input.hide();
+                }
+            });
+            row.find(".Edit").show();
+            row.find(".Delete").show();
+            row.find(".Update").hide();
+            $(this).hide();
+        });
+
+        //Delete event handler.
+        $("body").on("click", "#tblCategories .Delete", function () {
+            if (confirm("Do you want to delete this row?")) {
+                var row = $(this).closest("tr");
+                var CategoryId = row.find("span").html();
+                $.ajax({
+                    type: "POST",
+                    url: "/Category/DeleteCategory",
+                    data: '{CategoryId: ' + CategoryId + '}',
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (response) {
+                        row.remove();
+                    }
+                });
+            }
+        });
+
+    </script>
+</body>
+</html>
+
